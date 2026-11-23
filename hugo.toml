@@ -3,7 +3,7 @@
 # 部署到 Cloudflare Pages 后，把 baseURL 改成你的真实地址
 # （免费二级域名形如 https://你的项目名.pages.dev/ ）
 # ============================================================
-baseURL = "https://YOUR-NAME.pages.dev/"
+baseURL = "https://blog-7as.pages.dev/"
 title = "瓜圣帝君的博客"
 languageCode = "zh-cn"
 theme = "PaperMod"
