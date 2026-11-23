@@ -1,0 +1,12 @@
+{{- /* Twikoo 评论区 */ -}}
+{{- /* 部署好 Twikoo 后端（Cloudflare Workers）后，把下面的 envId 换成你的环境 ID，重新发布即可。 */ -}}
+{{- /* 在 Twikoo 后端没部署好之前，这个评论区会加载失败，不影响文章阅读。 */ -}}
+<div id="twikoo-comments"></div>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js"></script>
+<script>
+  twikoo.init({
+    envId: "YOUR_TWIKOO_ENV_ID",
+    el: "#twikoo-comments",
+    lang: "zh-CN"
+  });
+</script>
