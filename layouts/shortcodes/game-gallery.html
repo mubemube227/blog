@@ -1,0 +1,59 @@
+{{- $content := .Inner | .Page.RenderString -}}
+{{- $imgTags := findRE `<img[^>]+>` $content -}}
+{{- $items := slice -}}
+{{- range $imgTags -}}
+  {{- $src := "" -}}
+  {{- with findRE `src=["']([^"']+)["']` . -}}
+    {{- $src = replaceRE `src=["'](.+)["']` "$1" (index . 0) -}}
+  {{- end -}}
+  {{- $alt := "" -}}
+  {{- with findRE `alt=["']([^"']*)["']` . -}}
+    {{- $alt = replaceRE `alt=["'](.+)["']` "$1" (index . 0) -}}
+  {{- end -}}
+  {{- if $src -}}
+    {{- $items = $items | append (dict "src" $src "alt" $alt) -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $items -}}
+  {{- warnf "game-gallery: no images found in %s" .Page.RelPermalink -}}
+{{- else if gt (len $items) 2 -}}
+  {{- warnf "game-gallery: more than 2 images in %s; layout will stack" .Page.RelPermalink -}}
+{{- end -}}
+{{- with $items -}}
+<div class="game-gallery game-gallery--{{ len $items }}" data-count="{{ len $items }}">
+  {{- range . -}}
+  <figure class="game-gallery-item">
+    <a class="article-gallery-item" href="{{ .src | relURL }}" target="_blank" rel="noopener">
+      <img
+        src="{{ .src | relURL }}"
+        alt="{{ .alt }}"
+        onload="this.parentNode.dataset.pswpWidth = this.naturalWidth; this.parentNode.dataset.pswpHeight = this.naturalHeight;"
+      >
+    </a>
+    {{- with .alt -}}
+      <figcaption>{{ . }}</figcaption>
+    {{- end -}}
+  </figure>
+  {{- end -}}
+</div>
+<script>
+  (() => {
+    document.querySelectorAll('.game-gallery:not([data-gallery-ready])').forEach((gallery) => {
+      gallery.dataset.galleryReady = '1';
+      if (gallery.dataset.count !== '2') return;
+      const images = Array.from(gallery.querySelectorAll('img'));
+      if (images.length !== 2) return;
+      const pairIfLandscape = () => {
+        if (images.every((img) => img.naturalWidth > img.naturalHeight)) {
+          gallery.classList.add('game-gallery--pair');
+        }
+      };
+      if (images.every((img) => img.complete && img.naturalWidth)) {
+        pairIfLandscape();
+      } else {
+        images.forEach((img) => img.addEventListener('load', pairIfLandscape, { once: true }));
+      }
+    });
+  })();
+</script>
+{{- end -}}

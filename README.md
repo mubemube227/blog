@@ -20,6 +20,35 @@ Hugo 静态博客，主题 **Reimu**，托管在 Cloudflare Pages，评论用 Tw
    ```
    Cloudflare Pages 会自动构建，2~3 分钟后上线。
 
+## Galgame 评测组件
+
+有 `game:` 数据的文章会自动在正文开头生成「作品卡 + 雷达评分」，普通文章不受影响。
+
+```yaml
+cover: /images/games/xxx/cover.webp
+game:
+  title: 游戏名
+  studio: 社团
+  release: 2024-06-28
+  score: 8.6
+  radar: /images/games/xxx/radar.png
+```
+
+- 总分 10 分制；雷达图由你在外部制作，建议 1:1、1000×1000 PNG，深色文字/线条 + 透明背景，放在作品卡内侧。
+- 缺字段会显示“待补”并在构建日志警告，不阻塞预览。
+- 正文视觉图用 `game-gallery`：
+
+```go
+{{< game-gallery >}}
+![游戏截图 1](/images/games/xxx/01.webp)
+![游戏截图 2](/images/games/xxx/02.webp)
+{{< /game-gallery >}}
+```
+
+两张都是横图时并排，否则上下；点击用主题自带灯箱放大。
+
+示例草稿在 `content/posts/galgame-demo.md`（`draft: true`），复制后替换封面、雷达图和截图即可。演示雷达图是占位素材：`static/images/games/demo/radar.png`。
+
 ## 本地预览（可选）
 
 Reimu 主题使用 SCSS。Hugo 0.170.1 自身不再内置 Sass 编译器，需要另外装 **Dart Sass**：
@@ -51,8 +80,10 @@ hugo --gc --minify
 | `data/covers.yml` | 文章卡片随机封面 |
 | `static/css/custom.css` | 自定义样式（搜索页、手机端标题、深色强调色） |
 | `layouts/search.html`、`assets/js/search.js`、`layouts/index.json` | 站内本地搜索（Fuse.js） |
+| `layouts/404.html` | 自定义 404 页 |
+| `layouts/partials/post/game-review.html`、`layouts/shortcodes/game-gallery.html` | Galgame 作品卡与正文图组件 |
 | `layouts/_default/list.html` | 文章列表模板（`/posts/` 已关闭，保留备用） |
-| `layouts/partials/post/date.html` | 文章页元信息（日期、字数、阅读时间） |
+| `layouts/partials/post/date.html` | 文章页元信息（日期、字数） |
 | `themes/reimu/` | 主题本体，不要直接改里面的文件 |
 | `themes/PaperMod/` | 旧主题，保留用于回滚 |
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Locale }}"
+{{- $dm := partial "helpers/darkMode.html" . -}}
+data-theme-mode="{{ $dm.mode }}">
+<head>
+  {{- if .Site.Params.injector.head_begin -}}
+    {{- .Site.Params.injector.head_begin | safeHTML -}}
+  {{- end -}}
+  {{- partial "head.html" . -}}
+  {{- if .Site.Params.injector.head_end -}}
+    {{- .Site.Params.injector.head_end | safeHTML -}}
+  {{- end -}}
+</head>
+<body>
+  {{- if .Site.Params.injector.body_begin -}}
+    {{- .Site.Params.injector.body_begin | safeHTML -}}
+  {{- end -}}
+  <div id="container">
+    <div id="wrap">
+      {{ partial "header.html" (merge (dict "Page" .) (dict "Site" .Site) (dict "Type" "404")) }}
+      <main class="notfound-page" aria-label="Page not found">
+        <div class="notfound-card">
+          <h1>页面不见了</h1>
+          <p>这个页面可能已经被删除，或者链接写错了。</p>
+          <div class="notfound-actions">
+            <a class="notfound-btn primary" href="{{ "/" | relLangURL }}">回首页</a>
+            <a class="notfound-btn" href="{{ "search/" | relLangURL }}">搜索文章</a>
+          </div>
+        </div>
+      </main>
+      {{- partialCached "footer.html" . -}}
+      <div id="mask" class="hide"></div>
+    </div>
+    {{- partial "mobilebar.html" . -}}
+  </div>
+  {{- partial "afterFooter.html" . -}}
+  {{- if .Site.Params.injector.body_end -}}
+    {{- .Site.Params.injector.body_end | safeHTML -}}
+  {{- end -}}
+</body>
+</html>

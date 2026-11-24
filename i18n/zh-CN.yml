@@ -16,7 +16,7 @@ older: 后一篇
 share: 分享
 powered_by: 基于
 rss_feed: RSS 订阅
-category: 目录
+category: 分类
 tag: 标签
 toc: 文章目录
 more: 查看更多
@@ -31,6 +31,15 @@ sidebar:
   category: 分类
   tag: 标签
 
+game:
+  studio: 社团
+  release: 发售日
+  score: 总分
+  pending: 待补
+  title_pending: 游戏名待补
+  cover_pending: 封面待补
+  radar_pending: 评分图待补
+
 not_found:
   title: 4 0 4 (ﾟ⊿ﾟ)ﾂ
   subtitle: 満 身 創 痍
@@ -39,9 +48,6 @@ post:
   count:
     one: "{{- . }} 字"
     other: "{{- . }} 字"
-  time:
-    one: "{{- . }} 分钟"
-    other: "{{- . }} 分钟"
 
 busuanzi:
   pv: 总访问量

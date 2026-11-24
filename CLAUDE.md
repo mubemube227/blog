@@ -22,9 +22,11 @@
 1. **不要直接改 `themes/reimu/` 里的文件。** 定制一律用覆盖机制：
    - 主题参数：`config/_default/params.yml`（菜单、横幅、侧栏、配色、评论、特效）
    - 数据：`data/covers.yml`（随机封面）、`data/friends.yml`（友链）
-   - 模板覆盖：根目录 `layouts/`（已有 `search.html`、`index.json`、
-     `_default/list.html`、`partials/pagination.html`、`partials/post/date.html`、
-     `partials/post/tag.html`、`partials/sidebar/commonBar.html`）
+   - 模板覆盖：根目录 `layouts/`（已有 `search.html`、`index.json`、`404.html`、
+     `_default/list.html`、`partials/article.html`、`partials/pagination.html`、
+     `partials/post/date.html`、`partials/post/tag.html`、`partials/post/game-review.html`、
+     `partials/sidebar/commonBar.html`、`partials/post.html`、`partials/footer.html`、
+     `shortcodes/game-gallery.html`）
    - 自定义样式：`static/css/custom.css`，通过 `params.yml` 的
      `injector.head_end` 引入
    - 自定义脚本：`assets/js/`（现有 `search.js`、`fuse.basic.min.js`）
@@ -53,8 +55,15 @@
 | `data/covers.yml` | 文章卡片随机封面（占位 SVG） |
 | `static/css/custom.css` | 搜索页、手机端标题、深色强调色 |
 | `layouts/search.html` + `assets/js/search.js` + `layouts/index.json` | 本地 Fuse.js 搜索 |
+| `layouts/404.html` | 自定义 404 页（页面不见了 / 回首页 / 搜索） |
+| `layouts/partials/post/game-review.html` | Galgame 作品卡 + 雷达评分 |
+| `layouts/shortcodes/game-gallery.html` | 正文 1–2 张视觉图（自然比例 + 灯箱） |
+| `content/posts/galgame-demo.md` | 评测组件示例草稿（draft） |
+| `content/posts/yosuga-no-sora.md` | 缘之空 + 悠之空评测文章（已发布） |
 | `layouts/_default/list.html` | 文章列表模板（`/posts/` 已关闭，保留备用） |
-| `layouts/partials/post/date.html` | 文章页元信息（日期/字数/阅读时间） |
+| `layouts/partials/post/date.html` | 文章页元信息（日期/字数；不显示阅读时长） |
+| `layouts/partials/post.html` | 文章卡片模板（去掉阅读时长） |
+| `layouts/partials/footer.html` | 页脚模板（去掉累计阅读时长） |
 | `themes/reimu/` | 主题本体，不要改 |
 | `themes/PaperMod/` | 旧主题，保留用于回滚 |
 | `assets/css/extended/custom.css` | 旧 PaperMod 的样式，现已不加载（仅备份） |
@@ -79,6 +88,20 @@
 - `/archives/` 已删除；`/tags/` 与标签分类法已关闭，文章底部标签链接和侧栏标签入口已移除。
 - `content/posts/_index.md` 用 `build.render: never` 关闭 `/posts/` 列表页，文章仍从首页和文章 URL 访问。
 - 分类页 `/categories/` 保留。
+
+## Galgame 评测组件
+
+- 数据在文章 front matter：顶层 `cover` + `game` 块（`title`、`studio`、`release`、`score`、`radar`）。
+- 有 `game:` 的文章由 `layouts/partials/article.html` 在正文前插入
+  `layouts/partials/post/game-review.html`；普通文章不受影响。
+- 文章头图继续用 `cover`，组件用 `body:has(.game-review-article)` 加暗色遮罩；
+  作品卡里完整显示同一张封面。
+- 雷达图由博主外部制作，缩小后放在作品卡内侧，背景与页面背景一致；不要改成用 JS 画图，也不要单独分隔。
+- 正文视觉图用 `layouts/shortcodes/game-gallery.html`：
+  `{{< game-gallery >}}` 内放 1–2 个 Markdown 图片；两张都是横图才并排。
+- 缺字段显示“待补”并 `warnf`，不阻塞构建。
+- 示例草稿：`content/posts/galgame-demo.md`（保持 `draft: true`）、
+  演示雷达图：`static/images/games/demo/radar.png`。
 
 ## 搜索
 

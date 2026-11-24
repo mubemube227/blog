@@ -1,0 +1,89 @@
+{{- $game := .Params.game -}}
+{{- if not (reflect.IsMap $game) -}}
+  {{- warnf "game: expected a map in %s" .RelPermalink -}}
+  {{- $game = dict -}}
+{{- end -}}
+
+{{- $title := index $game "title" -}}
+{{- $studio := index $game "studio" -}}
+{{- $releaseRaw := index $game "release" -}}
+{{- $radarRaw := index $game "radar" -}}
+{{- $scoreRaw := index $game "score" -}}
+{{- $coverRaw := .Params.cover -}}
+{{- if not $coverRaw -}}
+  {{- $coverRaw = index $game "cover" -}}
+{{- end -}}
+
+{{- $release := "" -}}
+{{- if $releaseRaw -}}
+  {{- if eq (printf "%T" $releaseRaw) "time.Time" -}}
+    {{- $release = $releaseRaw.Format "2006-01-02" -}}
+  {{- else -}}
+    {{- $release = printf "%v" $releaseRaw -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $score := "" -}}
+{{- if isset $game "score" -}}
+  {{- $score = printf "%.1f" (float $scoreRaw) -}}
+{{- end -}}
+
+{{- $cover := "" -}}
+{{- with $coverRaw -}}
+  {{- $cover = . | relURL -}}
+{{- end -}}
+{{- $radar := "" -}}
+{{- with $radarRaw -}}
+  {{- $radar = . | relURL -}}
+{{- end -}}
+
+{{- if not $cover -}}{{ warnf "game: cover missing in %s" .RelPermalink }}{{ end -}}
+{{- if not $title -}}{{ warnf "game: title missing in %s" .RelPermalink }}{{ end -}}
+{{- if not $studio -}}{{ warnf "game: studio missing in %s" .RelPermalink }}{{ end -}}
+{{- if not $release -}}{{ warnf "game: release missing in %s" .RelPermalink }}{{ end -}}
+{{- if not $score -}}{{ warnf "game: score missing in %s" .RelPermalink }}{{ end -}}
+{{- if not $radar -}}{{ warnf "game: radar missing in %s" .RelPermalink }}{{ end -}}
+
+<section class="game-review" aria-label="作品信息与评分">
+  <div class="game-review-card">
+    <div class="game-review-cover">
+      {{- with $cover -}}
+        <img src="{{ . }}" alt="{{ $title | default "游戏封面" }} 封面" loading="lazy">
+      {{- else -}}
+        <span class="game-review-placeholder">{{ i18n "game.cover_pending" }}</span>
+      {{- end -}}
+    </div>
+    <div class="game-review-info">
+      <div class="game-review-head">
+        <h2 class="game-review-title">{{ $title | default (i18n "game.title_pending") }}</h2>
+        <div class="game-review-score"{{ if $score }} aria-label="{{ i18n "game.score" }} {{ $score }} / 10"{{ end }}>
+          {{- if $score -}}
+            <span class="game-review-score-value">{{ $score }}</span><span class="game-review-score-scale">/10</span>
+          {{- else -}}
+            <span class="game-review-score-value">{{ i18n "game.pending" }}</span>
+          {{- end -}}
+          <span class="game-review-score-label">{{ i18n "game.score" }}</span>
+        </div>
+      </div>
+      <dl class="game-review-meta">
+        <div>
+          <dt>{{ i18n "game.studio" }}</dt>
+          <dd>{{ $studio | default (i18n "game.pending") }}</dd>
+        </div>
+        <div>
+          <dt>{{ i18n "game.release" }}</dt>
+          <dd>{{ $release | default (i18n "game.pending") }}</dd>
+        </div>
+      </dl>
+    </div>
+    <div class="game-review-radar">
+      <div class="game-review-radar-frame">
+        {{- with $radar -}}
+          <img src="{{ . }}" alt="{{ $title | default "游戏" }} 评分雷达图" loading="lazy">
+        {{- else -}}
+          <span class="game-review-placeholder">{{ i18n "game.radar_pending" }}</span>
+        {{- end -}}
+      </div>
+    </div>
+  </div>
+</section>

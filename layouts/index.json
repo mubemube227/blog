@@ -4,6 +4,7 @@
   {{- $data = $data | append (dict
     "title" .Title
     "permalink" .Permalink
+    "date" (.Date.Format "2006-01-02")
     "summary" (.Summary | plainify | htmlUnescape)
     "content" (.Plain | plainify | htmlUnescape)
   ) -}}
