@@ -1,0 +1,17 @@
+{{- define "main" -}}
+  <div class="search-page">
+    <p class="search-hint">{{ .Params.placeholder | default "输入关键字搜索文章…" }}</p>
+    <div id="searchbox" class="searchbox">
+      <input id="searchInput" type="search" autocomplete="off" maxlength="64"
+        placeholder="{{ .Params.placeholder | default "输入关键字搜索文章…" }}"
+        aria-label="搜索文章" disabled>
+      <ul id="searchResults" class="searchResults" aria-label="搜索结果"></ul>
+    </div>
+    <noscript><p>搜索需要启用 JavaScript。</p></noscript>
+  </div>
+
+  {{- $fuse := resources.Get "js/fuse.basic.min.js" | minify | fingerprint -}}
+  {{- $search := resources.Get "js/search.js" | minify | fingerprint -}}
+  <script src="{{ $fuse.RelPermalink }}" defer></script>
+  <script src="{{ $search.RelPermalink }}" defer></script>
+{{- end -}}

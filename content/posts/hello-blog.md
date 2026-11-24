@@ -4,6 +4,7 @@ date: 2026-11-23T16:30:00+08:00
 draft: false
 tags: ["博客", "建站"]
 categories: ["公告"]
+cover: "/images/covers/cover-1.svg"
 description: "博客开通的第一篇文章：这里会写什么，以及这个博客的搭建方式。"
 ---
 
@@ -15,7 +16,7 @@ description: "博客开通的第一篇文章：这里会写什么，以及这个
 
 整套方案主打一个零成本：
 
-- 用 **Hugo** 生成静态网页，主题是简洁的文字型主题 PaperMod
+- 用 **Hugo** 生成静态网页，主题是 Reimu（紫蓝色二次元风格）
 - 文章全部用 Markdown 写，存在 GitHub 仓库里
 - 托管在 **Cloudflare Pages** 上，免费，每次发布自动更新
 - 评论用 **Twikoo**，在文章下面填个昵称就能留言
@@ -25,7 +26,7 @@ description: "博客开通的第一篇文章：这里会写什么，以及这个
 ## 怎么写新文章
 
 1. 在 `content/posts/` 里新建一个 `.md` 文件（文件名用英文或拼音，标题写中文）
-2. 套用文章模板，写标题、日期、标签，然后正文随便写
+2. 套用文章模板，写标题、日期、分类，然后正文随便写
 3. 图片放在 `static/images/` 里，正文里用 `/images/文件名` 引用
 4. 一条命令发布：`git add . && git commit -m "新文章" && git push`，等两三分钟就上线了
 

@@ -2,3 +2,8 @@ public/
 resources/_gen/
 .hugo_build.lock
 .DS_Store
+
+# 本地构建/预览用的临时工具与脚本，不要提交
+.tmp-*/
+scripts-tmp/
+.claude/

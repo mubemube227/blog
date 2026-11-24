@@ -1,0 +1,11 @@
+{{- $pages := where site.RegularPages "Section" "posts" -}}
+{{- $data := slice -}}
+{{- range $pages -}}
+  {{- $data = $data | append (dict
+    "title" .Title
+    "permalink" .Permalink
+    "summary" (.Summary | plainify | htmlUnescape)
+    "content" (.Plain | plainify | htmlUnescape)
+  ) -}}
+{{- end -}}
+{{- $data | jsonify -}}

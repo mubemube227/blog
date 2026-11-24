@@ -1,0 +1,346 @@
+/* ============================================================
+   瓜圣帝君的博客 —— 排版 / 字体 / 配色微调
+   只覆盖 PaperMod 的 CSS 变量与少量选择器，不改主题文件。
+   不依赖任何外部字体或 CDN：全部使用系统字体。
+   想整体回退：删掉本文件即可。
+   ============================================================ */
+
+/* ---------- 1. 配色（浅色）：纸张底 + 瓜绿强调色 ---------- */
+:root {
+    --main-width: 740px;
+
+    --theme: rgb(250, 249, 245);      /* 页面底：微暖的纸色 */
+    --entry: rgb(255, 255, 255);
+    --primary: rgb(38, 38, 36);
+    --content: rgb(52, 52, 49);       /* 正文略柔，不用纯黑 */
+    --secondary: rgb(115, 115, 108);
+    --tertiary: rgb(208, 207, 199);
+    --border: rgb(232, 230, 222);
+    --code-bg: rgb(240, 238, 230);
+
+    --accent: rgb(58, 112, 84);       /* 瓜皮绿 */
+    --accent-soft: rgba(58, 112, 84, 0.10);
+
+    --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC",
+        "HarmonyOS Sans SC", "Hiragino Sans GB", "Microsoft YaHei UI",
+        "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC",
+        "Segoe UI", sans-serif;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Cascadia Mono",
+        "Microsoft YaHei UI", monospace;
+}
+
+/* ---------- 2. 配色（深色）：偏暖的深灰，避免纯黑刺眼 ---------- */
+:root[data-theme="dark"] {
+    --theme: rgb(26, 27, 26);
+    --entry: rgb(36, 37, 36);
+    --primary: rgb(226, 225, 220);
+    --content: rgb(204, 203, 197);
+    --secondary: rgb(150, 150, 142);
+    --tertiary: rgb(70, 71, 68);
+    --border: rgb(48, 49, 47);
+    --code-bg: rgb(44, 45, 43);
+    --code-block-bg: rgb(33, 34, 33);
+
+    --accent: rgb(134, 190, 156);
+    --accent-soft: rgba(134, 190, 156, 0.12);
+}
+
+/* ---------- 3. 全局字体与基础排版 ---------- */
+body {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.8;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+code, pre, kbd, samp {
+    font-family: var(--font-mono);
+}
+
+::selection {
+    background: var(--accent-soft);
+    color: var(--primary);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+/* ---------- 4. 页头 / 导航 ---------- */
+.header {
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+}
+
+.logo a {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+#menu a {
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    color: var(--secondary);
+    transition: color 0.15s ease;
+}
+
+#menu a:hover {
+    color: var(--primary);
+}
+
+#menu .active {
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom-color: var(--accent);
+}
+
+/* ---------- 5. 首页：欢迎区 + 文章列表（卡片 → 平铺文字行） ---------- */
+.home-info .entry-header h1 {
+    font-size: 30px;
+    letter-spacing: 0.02em;
+}
+
+.home-info .entry-content {
+    font-size: 16px;
+    line-height: 1.9;
+}
+
+.first-entry {
+    min-height: 0;
+    margin: 28px 0 32px;
+}
+
+/* 文章列表去掉卡片底色，改成靠细线分隔的文字行 */
+.post-entry {
+    padding: 22px 0;
+    margin-bottom: 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+}
+
+.post-entry:hover,
+.post-entry:focus-within {
+    transform: none;
+    border-color: var(--border);
+}
+
+.post-entry .entry-header h2 {
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: color 0.15s ease;
+}
+
+.post-entry:hover .entry-header h2 {
+    color: var(--accent);
+}
+
+.post-entry .entry-content {
+    margin: 8px 0 10px;
+    font-size: 15px;
+    line-height: 1.75;
+}
+
+.entry-footer {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+/* ---------- 6. 文章页 ---------- */
+.post-title {
+    font-size: 32px;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+}
+
+.post-meta {
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+}
+
+.post-content {
+    font-size: 17.5px;
+    line-height: 1.95;
+    color: var(--content);
+}
+
+.md-content h2,
+.md-content h3,
+.md-content h4 {
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+    color: var(--primary);
+}
+
+.md-content h2 {
+    font-size: 25px;
+    margin: 2.2em 0 0.8em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border);
+}
+
+.md-content h3 {
+    font-size: 20px;
+    margin: 1.9em 0 0.6em;
+}
+
+.md-content h4 {
+    font-size: 17px;
+    margin: 1.6em 0 0.5em;
+}
+
+/* 段落间距比默认略大，中文大段文字更易读 */
+.md-content p {
+    margin-bottom: 1.15em;
+}
+
+.md-content p:not(:last-child),
+.md-content ul:not(:last-child),
+.md-content ol:not(:last-child) {
+    margin-bottom: 1.15em;
+}
+
+.md-content li {
+    margin-top: 0.4em;
+}
+
+.md-content strong {
+    font-weight: 650;
+    color: var(--primary);
+}
+
+/* 正文链接：强调色 + 细下划线 */
+.md-content a:not(.anchor) {
+    color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    transition: text-decoration-color 0.15s ease;
+}
+
+.md-content a:not(.anchor):hover {
+    text-decoration-color: var(--accent);
+}
+
+/* 引用：用来放「剧透预警」「作者注」等，做成柔和的色条块 */
+.md-content blockquote {
+    margin: 1.4em 0;
+    padding: 0.6em 1.1em;
+    color: var(--secondary);
+    background: var(--accent-soft);
+    border-inline-start: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.md-content blockquote p {
+    margin-bottom: 0.4em;
+}
+
+.md-content blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.md-content hr {
+    height: 1px;
+    margin: 2.4em 0;
+    background: var(--border);
+}
+
+/* 行内代码 */
+.post-content code {
+    font-size: 0.82em;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+}
+
+/* 游戏截图：居中、圆角、轻描边，图说居中弱化 */
+.md-content img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1.6em auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.md-content img.in-text {
+    display: inline;
+    border: 0;
+}
+
+.md-content figure > figcaption,
+.md-content figure > figcaption > p {
+    font-size: 13.5px;
+    font-weight: normal;
+    text-align: center;
+    color: var(--secondary);
+}
+
+/* 目录 */
+details.toc {
+    background: var(--entry);
+}
+
+/* ---------- 7. 标签、分页、页脚 ---------- */
+.post-tags a {
+    font-size: 13px;
+    padding: 0 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--secondary);
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.post-tags a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: transparent;
+}
+
+.paginav {
+    border-radius: var(--radius);
+}
+
+.footer {
+    color: var(--secondary);
+    font-size: 13px;
+    letter-spacing: 0.03em;
+}
+
+/* ---------- 8. 小屏 ---------- */
+@media (max-width: 600px) {
+    body {
+        font-size: 16px;
+    }
+
+    .post-title {
+        font-size: 26px;
+    }
+
+    .post-content {
+        font-size: 16.5px;
+        line-height: 1.9;
+    }
+
+    .md-content h2 {
+        font-size: 22px;
+    }
+
+    .post-entry .entry-header h2 {
+        font-size: 19px;
+    }
+}
+
+/* 尊重系统「减少动态效果」设置 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}

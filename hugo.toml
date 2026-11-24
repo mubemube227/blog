@@ -1,92 +1,35 @@
 # ============================================================
-# 瓜圣帝君的博客 —— 站点配置
-# 部署到 Cloudflare Pages 后，把 baseURL 改成你的真实地址
-# （免费二级域名形如 https://你的项目名.pages.dev/ ）
+# 瓜圣帝君的博客 —— 站点配置（Hugo + Reimu 主题）
+# 主题参数在 config/_default/params.yml，改样式优先看那里
 # ============================================================
 baseURL = "https://blog-7as.pages.dev/"
 title = "瓜圣帝君的博客"
-languageCode = "zh-cn"
-theme = "PaperMod"
-defaultContentLanguage = "zh"
+locale = "zh-CN"
+defaultContentLanguage = "zh-CN"
 defaultContentLanguageInSubdir = false
+theme = "reimu"
 enableRobotsTXT = true
 enableEmoji = true
+hasCJKLanguage = true
 
 [pagination]
   pagerSize = 10
 
-# 首页输出 JSON 是站内搜索必需的，别删
+# 只保留分类；标签页面已关闭
+[taxonomies]
+  category = "categories"
+
+# 首页 JSON 是自建站内搜索的数据源，别删
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 
-[params]
-  env = "production"
-  description = "galgame 游玩心得分享：文字 + 截图，想到什么写什么。"
-  author = "瓜圣帝君"
-  defaultTheme = "auto"
-  ShowReadingTime = true
-  ShowShareButtons = false
-  ShowPostNavLinks = true
-  ShowBreadCrumbs = true
-  ShowCodeCopyButtons = false
-  ShowWordCount = true
-  ShowRssButtonInSectionTermList = true
-  # 评论开关：Twikoo，配置见 layouts/partials/comments.html
-  comments = true
-
-  [params.homeInfoParams]
-    Title = "欢迎来到瓜圣帝君的博客 👋"
-    Content = "这里主要分享 galgame 游玩心得：以文字为主、配上游戏截图。文章下面可以留言，填个昵称就能评论。"
-
-  [[params.socialIcons]]
-    name = "github"
-    url = "https://github.com/mubemube227"
-
-  [[params.socialIcons]]
-    name = "rss"
-    url = "/index.xml"
-
-  # 站内搜索参数（PaperMod 内置 Fuse.js 搜索）
-  [params.fuseOpts]
-    isCaseSensitive = false
-    shouldSort = true
-    location = 0
-    distance = 1000
-    threshold = 0.4
-    minMatchCharLength = 0
-    keys = ["title", "permalink", "summary", "content"]
-
-# 顶部菜单
-[[menu.main]]
-  identifier = "posts"
-  name = "文章"
-  url = "/posts/"
-  weight = 10
-
-[[menu.main]]
-  identifier = "archives"
-  name = "归档"
-  url = "/archives/"
-  weight = 20
-
-[[menu.main]]
-  identifier = "tags"
-  name = "标签"
-  url = "/tags/"
-  weight = 30
-
-[[menu.main]]
-  identifier = "search"
-  name = "搜索"
-  url = "/search/"
-  weight = 40
-
-[[menu.main]]
-  identifier = "about"
-  name = "关于"
-  url = "/about/"
-  weight = 50
+[languages]
+  [languages.zh-CN]
+    label = "简体中文"
+    weight = 1
+    hasCJKLanguage = true
 
 [markup]
   [markup.highlight]
     noClasses = false
+    guessSyntax = true
