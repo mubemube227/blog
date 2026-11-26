@@ -67,8 +67,8 @@
 | `content/search.md` | 搜索页（`layout: search`） |
 | `static/images/banner.svg` | 全局横幅（占位） |
 | `static/images/games/<slug>/` | 旧文章的配图（新文章改用 bundle 内的 `images/`） |
-| `static/avatar/avatar.svg` | 头像（占位） |
-| `static/favicon.ico` | 标签页图标（占位西瓜） |
+| `static/avatar/avatar.jpg` | 头像（线稿，512×512） |
+| `static/favicon.ico` | 标签页图标（16–256 多尺寸） |
 | `data/covers.yml` | 文章卡片随机封面（占位 SVG） |
 | `static/css/custom.css` | 搜索页、手机端标题、深色强调色 |
 | `layouts/search.html` + `assets/js/search.js` + `layouts/index.json` | 本地 Fuse.js 搜索 |

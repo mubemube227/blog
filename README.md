@@ -108,8 +108,8 @@ hugo --gc --minify
 | `content/search.md` | 搜索页 |
 | `static/images/banner.svg` | 首页/文章页横幅（当前是占位图，可替换） |
 | `content/posts/<slug>/images/` | 新文章的配图（WebP；旧文章仍在 `static/images/games/<slug>/`） |
-| `static/avatar/avatar.svg` | 头像（当前是占位图，可替换） |
-| `static/favicon.ico` | 浏览器标签页图标（当前是占位西瓜） |
+| `static/avatar/avatar.jpg` | 头像（线稿，512×512） |
+| `static/favicon.ico` | 浏览器标签页图标（16–256 多尺寸） |
 | `data/covers.yml` | 文章卡片随机封面 |
 | `static/css/custom.css` | 自定义样式（搜索页、手机端标题、深色强调色） |
 | `layouts/search.html`、`assets/js/search.js`、`layouts/index.json` | 站内本地搜索（Fuse.js） |
