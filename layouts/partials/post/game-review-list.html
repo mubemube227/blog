@@ -1,0 +1,15 @@
+{{- $page := . -}}
+{{- $games := .Params.games -}}
+{{- if and (reflect.IsSlice $games) (gt (len $games) 0) -}}
+  <div class="game-review-list{{ if eq (len $games) 1 }} game-review-list--single{{ end }}" role="group" aria-label="{{ i18n "game.list" }}">
+    {{- range $games -}}
+      {{- $anchor := "" -}}
+      {{- if reflect.IsMap . -}}
+        {{- with index . "id" -}}{{- $anchor = printf "game-%v" . -}}{{- end -}}
+      {{- end -}}
+      {{- partial "post/game-review.html" (dict "game" . "page" $page "anchor" $anchor "feature" (eq (len $games) 1)) -}}
+    {{- end -}}
+  </div>
+{{- else -}}
+  {{- warnf "game-review-list: games must be a non-empty list in %s" $page.RelPermalink -}}
+{{- end -}}

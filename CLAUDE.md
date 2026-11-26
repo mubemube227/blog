@@ -25,8 +25,8 @@
    - 模板覆盖：根目录 `layouts/`（已有 `search.html`、`index.json`、`404.html`、
      `_default/list.html`、`partials/article.html`、`partials/pagination.html`、
      `partials/post/date.html`、`partials/post/tag.html`、`partials/post/game-review.html`、
-     `partials/sidebar/commonBar.html`、`partials/post.html`、`partials/footer.html`、
-     `shortcodes/game-gallery.html`）
+     `partials/post/game-radar.html`、`partials/post/game-review-list.html`、`partials/sidebar/commonBar.html`、
+     `partials/post.html`、`partials/footer.html`、`shortcodes/game.html`、`shortcodes/game-gallery.html`）
    - 自定义样式：`static/css/custom.css`，通过 `params.yml` 的
      `injector.head_end` 引入
    - 自定义脚本：`assets/js/`（现有 `search.js`、`fuse.basic.min.js`）
@@ -40,6 +40,18 @@
 5. 文章配图建议 WebP 并压缩；新图片放 `static/images/`。
 6. 提交信息用中文，一句话说明改动。改完先本地 `hugo --gc --minify` 确认无报错再提交。
 
+## 前端设计与验收流程（强制）
+
+涉及页面外观的改动（布局、样式、组件、模板）必须走完这套流程，不能跳步：
+
+1. **先调 skill**：动手前用 Skill 调用 `anthropic-skills:frontend-design`，先写一段简短设计方案（结构、字阶、间距、颜色、对齐），再改代码；没调用就改 CSS 视为违规。
+2. **截图**：改完启动本地预览，截四张：桌面 1280 亮色、1280 暗色、平板 1024、手机 390，存到 `scripts-tmp/acceptance/`。
+3. **视觉评审**：在本会话创建一个命名子 agent `design-reviewer`（只读，不改文件、不跑构建），把「用户原始要求 + 截图路径 + 本次改了什么」发给它；它用视觉能力判定 PASS / FAIL。
+4. **闭环**：FAIL 按问题清单改完重新截图再送审，直到 PASS；与评审意见有分歧时向用户说明，不静默忽略。
+5. **汇报**：未 PASS（或用户明确豁免）前，不要对用户说「完成了」；功能与构建验证仍由主 agent 自己做。
+
+评审至少覆盖：需求逐条满足、视觉层级、对齐与间距节奏、字号/行高、亮暗色对比、三档宽度、是否像模板化默认样式。一个评审子 agent 就够，不要为此组队。
+
 ## 目录速览
 
 | 路径 | 说明 |
@@ -47,6 +59,8 @@
 | `hugo.toml` | 站点级配置（地址、语言、输出格式、Markdown） |
 | `config/_default/params.yml` | Reimu 主题参数（菜单、侧栏、配色、Twikoo 等） |
 | `content/posts/` | 文章（`mainSections: ["posts"]`，URL 仍是 `/posts/...`；`/posts/` 列表页已关闭） |
+| `archetypes/posts.md` | 新文章模板（`hugo new content posts/...` 使用） |
+| `PUBLISHING.md` | 发布流程、素材清单、验收项（给专门的文章发布会话） |
 | `content/about.md` | 关于页 |
 | `content/search.md` | 搜索页（`layout: search`） |
 | `static/images/banner.svg` | 全局横幅（占位） |
@@ -91,17 +105,50 @@
 
 ## Galgame 评测组件
 
-- 数据在文章 front matter：顶层 `cover` + `game` 块（`title`、`studio`、`release`、`score`、`radar`）。
-- 有 `game:` 的文章由 `layouts/partials/article.html` 在正文前插入
-  `layouts/partials/post/game-review.html`；普通文章不受影响。
+- 版式命名：**A = 单作品**（`top` + 一个 `games` 条目）；**B = 多作品卡片置顶**
+  （`top` + 多个 `games`）；**C = 多作品分段插卡**（`sections` + `game` shortcode）。
+- 多作品数据：顶层 `cover` + `review_layout` + `games` 列表，每项含
+  `id`、`title`、`original_title`、`tags`、`studio`、`release`、`score`、`cover`、`radar`。
+  `radar` 四项：`story`（剧情）、`character`（人设）、`music`（音乐）、`art`（美术），每项 0–10；
+  雷达图以 4 分为起点绘制（中心 = 4、外圈 = 10，低于 4 按 4 显示）。
+  `original_title` 可选；`tags` 仅用于作品卡展示，不接入站点标签分类法。
+- `review_layout: top`（A/B 共用）：`layouts/partials/post/game-review-list.html` 在正文前按
+  `games` 顺序渲染卡片。只有一项时是 A 版式：桌面（≥1200）封面固定 320px 宽、按原图比例完整显示
+  （不裁切），卡片高度随封面（4:3 约 240px；更宽的横图会在图片下方留一条卡片底色），右侧是标题、
+  原名/社团/发售日、标签，最右是雷达（155px）与总分竖栏，总分徽章居中放在雷达正下方；信息区字阶
+  与间距相应压缩。≤1199 封面通高在左（裁切填充），右侧自上而下是文字、雷达、总分。
+  **≤760 手机卡（A/B/C 统一）**：封面按原比例完整显示、贴边不裁切；标题 22px 与评分块同排并垂直居中；
+  标签/值 13px、标签列 4em，文案改为 名称/社团/发行时间；标签胶囊 11px；2×2 四维分数面板显示，雷达隐藏。
+  多项时是 B 版式：桌面双列（窄屏单列），标题横跨整卡、
+  评分在右下，左列封面+紧凑雷达，右侧依次是原名、社团、发售日、标签（前三行两列对齐）；
+  不加标题、不关联正文；≤760 同样切到上面的手机卡（单列、封面自然比例、面板显示）。
+- `review_layout: sections`（C 版式）：`layouts/shortcodes/game.html` 按
+  `{{< game id="..." >}}` 插卡，卡片标题是 h2，section 带 `id="game-<id>"` 锚点和
+  `scroll-margin-top`，首张卡前可写导语。C 卡与 A 卡共用 `game-review--feature` 布局
+  （桌面封面 320px 宽、按比例完整显示，信息与雷达压缩；≤1199 平板封面通高；≤760 与 A/B 共用同一套手机卡），
+  标题仍是该段 h2/锚点；`.article-entry .game-review-*`
+  只做文章内 h2/ul/dl 的排版中和，不要再给 C 单独写卡片网格。
+- `layouts/partials/post/game-review.html` 接收 `(dict "game" ... "page" ... "fallbackCover" ... "anchor" ...)`；
+  不要改回直接读 `.Params.game`。每项使用自己的 `cover`，页面顶层 `cover` 只做头图。
+  旧单作品 `game:` 写法仍兼容（`article.html` 旧分支）；A 版式样本已改用新写法。
+- 手机端双语文案：桌面用 `原名/发售日/总分`，≤760 用 `名称/发行时间/评分`，由 `i18n` 的
+  `name_mobile` / `release_mobile` / `score_mobile` 与 `game-review-label--desktop|mobile` 双 span 切换；
+  2×2 面板由 `game-review.html` 输出，桌面/平板 `display:none`，≤760 与雷达互斥。
 - 文章头图继续用 `cover`，组件用 `body:has(.game-review-article)` 加暗色遮罩；
   作品卡里完整显示同一张封面。
-- 雷达图由博主外部制作，缩小后放在作品卡内侧，背景与页面背景一致；不要改成用 JS 画图，也不要单独分隔。
+- `layouts/partials/post/game-radar.html` 根据四项分数生成内联 SVG，不再使用雷达图片；
+  标签固定在四个方向、分数紧跟标签，数据/描边用主题变量，外框只留一条低透明度菱形。
+  不再单列「满分 10」注记（总分徽章已有 /10），避免右下角留白。
+  不要改回图片，也不要单独分隔成白色方块；深色下不要补 `#eee` 底色。
+- C 版式的卡片在 `.article-entry` 内，`custom.css` 对文章 h2 / ul / dl 有 scoped 覆盖；
+  C 版式建议 `toc: false`，模板不会自动生成作品目录。
 - 正文视觉图用 `layouts/shortcodes/game-gallery.html`：
   `{{< game-gallery >}}` 内放 1–2 个 Markdown 图片；两张都是横图才并排。
-- 缺字段显示“待补”并 `warnf`，不阻塞构建。
-- 示例草稿：`content/posts/galgame-demo.md`（保持 `draft: true`）、
-  演示雷达图：`static/images/games/demo/radar.png`。
+- 缺字段显示“待补”并 `warnf`，不阻塞构建；`radar` 任一维度缺失时整体显示待补。
+- 示例：`content/posts/yosuga-no-sora.md`（B 版式两卡）、
+  `content/posts/c-layout-demo.md`（C 版式演示草稿）、
+  `content/posts/galgame-demo.md`（A 版式单作品样本，保持 `draft: true`）。
+- 新文章模板：`archetypes/posts.md`；发布流程与发布会话交接见 `PUBLISHING.md`。
 
 ## 搜索
 

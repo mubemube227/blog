@@ -32,13 +32,26 @@ sidebar:
   tag: 标签
 
 game:
+  list: 作品列表
   studio: 社团
   release: 发售日
+  release_mobile: 发行时间
+  original_title: 原名
+  name_mobile: 名称
+  tags: 作品标签
   score: 总分
+  score_mobile: 评分
   pending: 待补
   title_pending: 游戏名待补
   cover_pending: 封面待补
-  radar_pending: 评分图待补
+  radar_pending: 评分待补
+  story: 剧情
+  character: 人设
+  music: 音乐
+  art: 美术
+  radar: 评分雷达图
+  panel: 四项评分
+  full_score: 满分 10
 
 not_found:
   title: 4 0 4 (ﾟ⊿ﾟ)ﾂ

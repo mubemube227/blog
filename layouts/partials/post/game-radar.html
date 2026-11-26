@@ -1,0 +1,85 @@
+{{- $page := .page -}}
+{{- $scores := .scores -}}
+{{- $title := .title | default "游戏" -}}
+{{- $dims := slice
+      (dict "key" "story" "label" (i18n "game.story"))
+      (dict "key" "character" "label" (i18n "game.character"))
+      (dict "key" "music" "label" (i18n "game.music"))
+      (dict "key" "art" "label" (i18n "game.art"))
+-}}
+{{- $values := dict -}}
+{{- $valid := reflect.IsMap $scores -}}
+{{- if $valid -}}
+  {{- range $dims -}}
+    {{- $key := .key -}}
+    {{- $raw := index $scores $key -}}
+    {{- $type := printf "%T" $raw -}}
+    {{- if in (slice "int" "int64" "uint" "uint32" "uint64" "float64" "float32") $type -}}
+      {{- $value := float $raw -}}
+      {{- if and (ge $value 0.0) (le $value 10.0) -}}
+        {{- $values = merge $values (dict $key $value) -}}
+      {{- else -}}
+        {{- warnf "game: radar.%s must be between 0 and 10 in %s" $key $page.RelPermalink -}}
+        {{- $valid = false -}}
+      {{- end -}}
+    {{- else -}}
+      {{- warnf "game: radar.%s is missing or not a number in %s" $key $page.RelPermalink -}}
+      {{- $valid = false -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- warnf "game: radar scores missing in %s" $page.RelPermalink -}}
+{{- end -}}
+{{- if $valid -}}
+  {{- $cx := 100.0 -}}
+  {{- $cy := 100.0 -}}
+  {{- $r := 56.0 -}}
+  {{- $outlinePoints := printf "%.1f,%.1f %.1f,%.1f %.1f,%.1f %.1f,%.1f" $cx (sub $cy $r) (add $cx $r) $cy $cx (add $cy $r) (sub $cx $r) $cy -}}
+  {{- $baseline := 4.0 -}}
+  {{- $span := 6.0 -}}
+  {{- $storyR := mul (div (math.Max 0.0 (sub (index $values "story") $baseline)) $span) $r -}}
+  {{- $characterR := mul (div (math.Max 0.0 (sub (index $values "character") $baseline)) $span) $r -}}
+  {{- $musicR := mul (div (math.Max 0.0 (sub (index $values "music") $baseline)) $span) $r -}}
+  {{- $artR := mul (div (math.Max 0.0 (sub (index $values "art") $baseline)) $span) $r -}}
+  {{- $pts := slice
+        (dict "x" $cx "y" (sub $cy $storyR))
+        (dict "x" (add $cx $characterR) "y" $cy)
+        (dict "x" $cx "y" (add $cy $musicR))
+        (dict "x" (sub $cx $artR) "y" $cy)
+  -}}
+  {{- $dataPoints := "" -}}
+  {{- range $pts -}}
+    {{- $dataPoints = printf "%s%.1f,%.1f " $dataPoints .x .y -}}
+  {{- end -}}
+  {{- $dataPoints = strings.TrimSpace $dataPoints -}}
+  {{- $labelLayout := dict
+        "story" (dict "x" 100.0 "y" 26.0 "anchor" "middle")
+        "character" (dict "x" 166.0 "y" 100.0 "anchor" "start")
+        "music" (dict "x" 100.0 "y" 174.0 "anchor" "middle")
+        "art" (dict "x" 34.0 "y" 100.0 "anchor" "end")
+  -}}
+  {{- $ariaParts := "" -}}
+  {{- range $dims -}}
+    {{- $part := printf "%s %g" .label (index $values .key) -}}
+    {{- if $ariaParts -}}
+      {{- $ariaParts = printf "%s，%s" $ariaParts $part -}}
+    {{- else -}}
+      {{- $ariaParts = $part -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $aria := printf "%s%s：%s，%s" $title (i18n "game.radar") $ariaParts (i18n "game.full_score") -}}
+  <svg class="game-radar-svg" viewBox="0 0 200 200" role="img" aria-label="{{ $aria }}" preserveAspectRatio="xMidYMid meet">
+    <title>{{ $aria }}</title>
+    <polygon class="game-radar-outline" points="{{ $outlinePoints }}" />
+    <polygon class="game-radar-data" points="{{ $dataPoints }}" />
+    {{- range $pts }}
+    <circle class="game-radar-dot" cx="{{ printf "%.1f" .x }}" cy="{{ printf "%.1f" .y }}" r="3.6" />
+    {{- end }}
+    {{- range $dims }}
+    {{- $pos := index $labelLayout .key }}
+    <text class="game-radar-label" x="{{ $pos.x }}" y="{{ $pos.y }}" text-anchor="{{ $pos.anchor }}" dominant-baseline="middle">{{ .label }} <tspan class="game-radar-number">{{ printf "%g" (index $values .key) }}</tspan></text>
+    {{- end }}
+  </svg>
+{{- else -}}
+  <span class="game-review-placeholder">{{ i18n "game.radar_pending" }}</span>
+{{- end -}}

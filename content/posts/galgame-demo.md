@@ -1,36 +1,45 @@
 ---
-title: "《Demo Game》评测：这套 galgame 组件长什么样"
+title: "《Demo Game》评测：A 版式（单作品）样本"
 date: 2026-11-24T20:30:00+08:00
 draft: true
-categories: ["公告"]
+categories: ["Galgame"]
 cover: "/images/covers/cover-1.svg"
-description: "Galgame 评测组件演示草稿：作品卡、评分雷达和正文视觉图。"
-game:
-  title: "Demo Game"
-  studio: "Demo 社团"
-  release: 2024-06-28
-  score: 8.6
-  radar: "/images/games/demo/radar.png"
+description: "A 版式（单作品）样本：顶部整行作品卡、雷达评分、正文视觉图。"
+toc: false
+review_layout: top
+games:
+  - id: demo-game
+    title: "Demo Game"
+    original_title: "デモゲーム"
+    tags: ["ADV", "演示"]
+    studio: "Demo 社团"
+    release: "2024-06-28"
+    score: 8.6
+    cover: "/images/covers/cover-1-4x3.svg"
+    radar:
+      story: 8
+      character: 9
+      music: 8
+      art: 9
 ---
 
-这是一篇用于验证组件的草稿，不会发布到线上。结构按最终方案来：顶部作品卡 + 雷达评分，下面是正文和 1–2 张视觉图。
+这是一篇 **A 版式（单作品）** 的样本草稿，不会发布到线上。顶部是一张整行作品卡，下面是正文和 1–2 张视觉图；正式文章把 `draft` 改成 `false`、替换封面和文字即可。
 
 {{< game-gallery >}}
 ![Demo 视觉图 1：夜色](/images/covers/cover-1.svg)
 ![Demo 视觉图 2：月光](/images/covers/cover-2.svg)
 {{< /game-gallery >}}
 
-## 这套组件应该解决什么
+## A 版式怎么写
 
-写 galgame 评测时，最麻烦的是每篇都要重复排版：封面、社团、发售日、评分和截图的位置都不固定。组件把这些固定下来，正文只负责写感受和放图。
+A 版式用 `review_layout: top`，`games` 只写一项；桌面（≥1200）会把封面按原比例完整显示在左侧（320px 宽），卡片高度随封面，右侧依次是标题、原名 / 社团 / 发售日、标签，最右是雷达与总分竖栏：总分在雷达正下方。不需要 `sections`，也不用退回旧的 `game:` 写法。
 
-- 作品卡只保留最少信息：封面、游戏名、社团、发售日、总分
-- 雷达图由外部制作，组件只负责展示和适配
-- 正文视觉图按原比例显示，不强行裁成 16:9
-- 两张都是横图时并排，否则上下排
+手机端（≤760）与 B/C 统一：封面按原比例完整显示、标题与评分同排、名称 / 社团 / 发行时间三行标签、四维分数面板，雷达隐藏。
 
-## 交互与适配
+卡片里的顺序是：标题、原名、社团、发售日、标签、总分和四项雷达。四项分数直接写在 frontmatter 的 `radar` 里，范围 0–10，雷达图由 Hugo 自动生成，以 4 分为起点。
 
-桌面端作品卡和雷达图左右排布，手机端自动上下堆叠。文章头图继续使用同一张封面，但加了暗色渐变，保证标题可读；作品卡里再完整显示一次封面。
+## 正文与配图
 
-> 这篇只是草稿；正式文章把 `draft` 改掉，并替换封面、雷达图和视觉图即可。
+正文继续写整体评测，不必按作品分节。视觉图用 `game-gallery`，两张都是横图时并排，否则上下；点击用主题灯箱放大。
+
+> 这篇只是草稿；正式文章记得替换 `title`、`cover`、`games` 数据和正文，并确认 `draft: false`。

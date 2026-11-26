@@ -1,0 +1,21 @@
+{{- $page := .Page -}}
+{{- $id := .Get "id" | default (.Get 0) -}}
+{{- $games := $page.Params.games -}}
+{{- if not (reflect.IsSlice $games) -}}
+  {{- warnf "game shortcode: games must be a list in %s" $page.RelPermalink -}}
+{{- else if not $id -}}
+  {{- warnf "game shortcode: id is required in %s" $page.RelPermalink -}}
+{{- else -}}
+  {{- $target := printf "%v" $id -}}
+  {{- $selected := false -}}
+  {{- range $games -}}
+    {{- if eq (printf "%v" (index . "id")) $target -}}
+      {{- $selected = . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $selected -}}
+    {{- partial "post/game-review.html" (dict "game" $selected "page" $page "anchor" (printf "game-%s" $target) "feature" true) -}}
+  {{- else -}}
+    {{- warnf "game shortcode: id %q not found in %s" $target $page.RelPermalink -}}
+  {{- end -}}
+{{- end -}}

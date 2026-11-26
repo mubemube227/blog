@@ -22,20 +22,42 @@ Hugo 静态博客，主题 **Reimu**，托管在 Cloudflare Pages，评论用 Tw
 
 ## Galgame 评测组件
 
-有 `game:` 数据的文章会自动在正文开头生成「作品卡 + 雷达评分」，普通文章不受影响。
+三种版式统一叫 **A / B / C**：
+
+- **A 版式**：单作品，`review_layout: top` + 一个 `games` 条目，整行四块卡 + 一篇完整正文。
+- **B 版式**：多作品，卡片置顶，`review_layout: top` + 多个 `games` 条目，正文整体写。
+- **C 版式**：多作品，分段插卡，`review_layout: sections` + 正文 `{{< game id="..." >}}`。
+
+A 和 B 共用 `top`，模板按 `games` 数量自动切换；单作品旧写法 `game:` 仍兼容。
 
 ```yaml
-cover: /images/games/xxx/cover.webp
-game:
-  title: 游戏名
-  studio: 社团
-  release: 2024-06-28
-  score: 8.6
-  radar: /images/games/xxx/radar.png
+cover: /images/games/xxx/banner.webp
+review_layout: top   # A/B 用 top（单作品一项 / 多作品多项）；C 用 sections
+games:
+  - id: game-id
+    title: 游戏名
+    original_title: ヨスガノソラ
+    tags: [ADV, 乡村, 妹系]
+    studio: 社团
+    release: 2024-06-28
+    score: 8.6
+    cover: /images/games/xxx/cover.webp
+    radar:
+      story: 6
+      character: 8
+      music: 6
+      art: 7
 ```
 
-- 总分 10 分制；雷达图由你在外部制作，建议 1:1、1000×1000 PNG，深色文字/线条 + 透明背景，放在作品卡内侧。
+- **A 版式**（`top` + 一项）：桌面（≥1200）封面固定 320px 宽、按原图比例完整显示，卡片高度随封面；右侧是标题、原名/社团/发售日、标签，最右是雷达与总分（总分在雷达正下方）；≤1199 封面通高在左、右侧文字与雷达上下排列。手机端（≤760）A/B/C 统一为：封面自然比例不裁切、标题与评分同排、名称/社团/发行时间、标签、四维分数面板，雷达隐藏。
+- **B 版式**（`top` + 多项）：卡片在正文前双列并排（窄屏单列），标题横跨卡片、评分在右下，左列是封面+雷达，右侧依次是原名、社团、发售日、标签。不加标题、不关联正文，正文继续写整体评测；≤760 同样切到手机卡。
+- **C 版式**（`sections`）：正文用 `{{< game id="game-id" >}}` 插卡；卡片标题即该段 h2 和锚点，首张卡前可写导语。C 卡直接复用 A 卡的 `game-review--feature` 布局（桌面封面按比例完整显示、卡片高度随图；平板封面通高；≤760 与 A/B 共用手机卡），单作品一般不用。
+- 每项使用自己的 `cover`；顶层 `cover` 只做文章头图；`id` 用于 C 版式插卡。
+- `original_title`、`tags` 可选；`tags` 只展示，不会生成站点标签页。
+- 总分 10 分制；雷达图由 Hugo 内联 SVG 根据四项分数生成，以 4 分为起点（中心 = 4、外圈 = 10），不再使用图片。
+- 顺序固定为剧情（上）、人设（右）、音乐（下）、美术（左），每项 0–10；分数直接标在四项标签后，不额外放刻度注记。
 - 缺字段会显示“待补”并在构建日志警告，不阻塞预览。
+- C 版式建议设置 `toc: false`，模板不会自动生成作品目录。
 - 正文视觉图用 `game-gallery`：
 
 ```go
@@ -47,7 +69,9 @@ game:
 
 两张都是横图时并排，否则上下；点击用主题自带灯箱放大。
 
-示例草稿在 `content/posts/galgame-demo.md`（`draft: true`），复制后替换封面、雷达图和截图即可。演示雷达图是占位素材：`static/images/games/demo/radar.png`。
+A 版式样本：`content/posts/galgame-demo.md`（单作品，`draft: true`）；B 版式样稿：`content/posts/yosuga-no-sora.md`（两卡）；C 版式演示：`content/posts/c-layout-demo.md`（`draft: true`）。旧 `game:` 写法仍兼容，但不再作为新文章示例。
+
+新建文章可以直接用 `hugo new content posts/文件名.md`，会套用 `archetypes/posts.md`。完整发布流程、素材清单和验收项见 [PUBLISHING.md](PUBLISHING.md)。
 
 ## 本地预览（可选）
 
@@ -72,6 +96,8 @@ hugo --gc --minify
 | `hugo.toml` | 站点级配置：地址、语言、输出格式、Markdown |
 | `config/_default/params.yml` | Reimu 主题参数：菜单、横幅、侧栏、配色、评论、特效 |
 | `content/posts/` | 文章（首页展示；`/posts/` 列表页已关闭） |
+| `archetypes/posts.md` | 新文章模板（`hugo new content posts/...` 使用） |
+| `PUBLISHING.md` | 文章发布流程与发布会话交接文档 |
 | `content/about.md` | 关于页 |
 | `content/search.md` | 搜索页 |
 | `static/images/banner.svg` | 首页/文章页横幅（当前是占位图，可替换） |
@@ -81,7 +107,7 @@ hugo --gc --minify
 | `static/css/custom.css` | 自定义样式（搜索页、手机端标题、深色强调色） |
 | `layouts/search.html`、`assets/js/search.js`、`layouts/index.json` | 站内本地搜索（Fuse.js） |
 | `layouts/404.html` | 自定义 404 页 |
-| `layouts/partials/post/game-review.html`、`layouts/shortcodes/game-gallery.html` | Galgame 作品卡与正文图组件 |
+| `layouts/partials/post/game-review.html`、`layouts/partials/post/game-radar.html`、`layouts/partials/post/game-review-list.html`、`layouts/shortcodes/game.html`、`layouts/shortcodes/game-gallery.html` | Galgame 作品卡、顶部列表、分段插卡、雷达图与正文图组件 |
 | `layouts/_default/list.html` | 文章列表模板（`/posts/` 已关闭，保留备用） |
 | `layouts/partials/post/date.html` | 文章页元信息（日期、字数） |
 | `themes/reimu/` | 主题本体，不要直接改里面的文件 |

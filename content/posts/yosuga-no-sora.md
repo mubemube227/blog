@@ -6,12 +6,34 @@ categories: ["Galgame"]
 cover: "/images/games/yosuga-no-sora/cover.webp"
 description: "缘之空 + 悠之空：瑛线与穹线游玩感受。"
 toc: false
-game:
-  title: "缘之空 + 悠之空"
-  studio: "Sphere"
-  release: "2008-12-05 / 2009-09-25"
-  score: 7.0
-  radar: "/images/games/yosuga-no-sora/radar.png"
+review_layout: top
+games:
+  - id: yosuga
+    title: "缘之空"
+    original_title: "ヨスガノソラ"
+    tags: ["ADV", "乡村", "妹系", "巫女"]
+    studio: "Sphere"
+    release: "2008-12-05"
+    score: 7.0
+    cover: "/images/games/yosuga-no-sora/cover.webp"
+    radar:
+      story: 6
+      character: 8
+      music: 6
+      art: 7
+  - id: haruka
+    title: "悠之空"
+    original_title: "ハルカナソラ"
+    tags: ["ADV", "FD", "后日谈", "妹系"]
+    studio: "Sphere"
+    release: "2009-09-25"
+    score: 7.0
+    cover: "/images/games/yosuga-no-sora/haruka.webp"
+    radar:
+      story: 6
+      character: 8
+      music: 6
+      art: 7
 ---
 
 {{< game-gallery >}}

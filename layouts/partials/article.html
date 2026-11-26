@@ -1,5 +1,5 @@
 <article
-  class="h-entry article{{ if .Params.game }} game-review-article{{ end }}"
+  class="h-entry article{{ if or .Params.game .Params.games }} game-review-article{{ end }}"
   itemscope
   itemtype="https://schema.org/BlogPosting"
 >
@@ -12,8 +12,14 @@
     </div>
     {{- partial "post/summary.html" . -}}
     <div class="hr-line"></div>
-    {{- if .Params.game -}}
-      {{- partial "post/game-review.html" . -}}
+    {{- if eq .Params.review_layout "top" -}}
+      {{- partial "post/game-review-list.html" . -}}
+    {{- else if eq .Params.review_layout "sections" -}}
+      {{- /* Cards are rendered by the game shortcode in the body. */ -}}
+    {{- else if .Params.game -}}
+      {{- partial "post/game-review.html" (dict "game" .Params.game "page" . "fallbackCover" .Params.cover) -}}
+    {{- else if .Params.games -}}
+      {{- warnf "review_layout missing for games in %s" .RelPermalink -}}
     {{- end -}}
     {{- partial "post/gallery.html" . -}}
     <div class="e-content article-entry" itemprop="articleBody">
