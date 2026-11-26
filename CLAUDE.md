@@ -37,7 +37,9 @@
 4. 读者在大陆：**不要启用 Google Fonts**（`font.enable: false`，用系统字体）；
    不要把资源换成境外 CDN。主题默认 vendor 用 `webcache`（国内 npm 镜像），
    Twikoo 已本地化；新增第三方资源优先放 `static/` 或 `assets/`。
-5. 文章配图建议 WebP 并压缩；新图片放 `static/images/`。
+5. 文章配图建议 WebP 并压缩。新文章图片随 page bundle 放
+   `content/posts/<slug>/images/`；旧文章的图片仍在 `static/images/games/<slug>/`，
+   不迁移。原图备份到仓库外 `D:\MDzz\AI\boke\originals\<slug>\`。
 6. 提交信息用中文，一句话说明改动。改完先本地 `hugo --gc --minify` 确认无报错再提交。
 
 ## 前端设计与验收流程（强制）
@@ -58,12 +60,13 @@
 | --- | --- |
 | `hugo.toml` | 站点级配置（地址、语言、输出格式、Markdown） |
 | `config/_default/params.yml` | Reimu 主题参数（菜单、侧栏、配色、Twikoo 等） |
-| `content/posts/` | 文章（`mainSections: ["posts"]`，URL 仍是 `/posts/...`；`/posts/` 列表页已关闭） |
-| `archetypes/posts.md` | 新文章模板（`hugo new content posts/...` 使用） |
+| `content/posts/` | 文章（`mainSections: ["posts"]`，URL 仍是 `/posts/...`；`/posts/` 列表页已关闭）。新文章是 page bundle：`<slug>/index.md` + `<slug>/images/`；旧文章仍是 `<slug>.md` |
+| `archetypes/posts/` | 新文章 page bundle 模板（`index.md` + `images/.gitkeep`）；用 `hugo new content posts/<slug>` 生成 |
 | `PUBLISHING.md` | 发布流程、素材清单、验收项（给专门的文章发布会话） |
 | `content/about.md` | 关于页 |
 | `content/search.md` | 搜索页（`layout: search`） |
 | `static/images/banner.svg` | 全局横幅（占位） |
+| `static/images/games/<slug>/` | 旧文章的配图（新文章改用 bundle 内的 `images/`） |
 | `static/avatar/avatar.svg` | 头像（占位） |
 | `static/favicon.ico` | 标签页图标（占位西瓜） |
 | `data/covers.yml` | 文章卡片随机封面（占位 SVG） |
@@ -105,6 +108,8 @@
 
 ## Galgame 评测组件
 
+- 新文章用 page bundle：`content/posts/<slug>/index.md` + `images/`；旧文章仍是
+  `content/posts/<slug>.md` + `static/images/games/<slug>/`，不迁移。
 - 版式命名：**A = 单作品**（`top` + 一个 `games` 条目）；**B = 多作品卡片置顶**
   （`top` + 多个 `games`）；**C = 多作品分段插卡**（`sections` + `game` shortcode）。
 - 多作品数据：顶层 `cover` + `review_layout` + `games` 列表，每项含
@@ -145,10 +150,13 @@
 - 正文视觉图用 `layouts/shortcodes/game-gallery.html`：
   `{{< game-gallery >}}` 内放 1–2 个 Markdown 图片；两张都是横图才并排。
 - 缺字段显示“待补”并 `warnf`，不阻塞构建；`radar` 任一维度缺失时整体显示待补。
-- 示例：`content/posts/yosuga-no-sora.md`（B 版式两卡）、
+- 示例（均为旧扁平结构，仅参考版式）：`content/posts/yosuga-no-sora.md`（B 版式两卡）、
   `content/posts/c-layout-demo.md`（C 版式演示草稿）、
   `content/posts/galgame-demo.md`（A 版式单作品样本，保持 `draft: true`）。
-- 新文章模板：`archetypes/posts.md`；发布流程与发布会话交接见 `PUBLISHING.md`。
+- 新文章模板：`archetypes/posts/`（`index.md` + `images/.gitkeep`）。
+  `hugo new content posts/<slug>` 会生成 `content/posts/<slug>/index.md` 和 `images/`；
+  发布前把图片转成 WebP、路径改成 `/posts/<slug>/images/...`。
+  发布流程与发布会话交接见 `PUBLISHING.md`。
 
 ## 搜索
 

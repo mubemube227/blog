@@ -4,17 +4,18 @@ Hugo 静态博客，主题 **Reimu**，托管在 Cloudflare Pages，评论用 Tw
 
 ## 日常写作与发布（最常用）
 
-1. 新建文章：在 `content/posts/` 里新建一个 `.md` 文件，文件名用英文/拼音
-   （装了 Hugo 的话可以用命令生成模板：`hugo new content posts/文件名.md`）
-2. 写文章：文件头部照模板填标题、日期、分类；`draft: true` 是草稿，
+1. 新建文章：用 `hugo new content posts/<slug>` 生成 page bundle
+   `content/posts/<slug>/index.md` + `images/`（只给目录名，不要加 `/index.md`）
+2. 写文章：照 `index.md` 里的模板填标题、正文、版式、作品数据；`draft: true` 是草稿，
    写完改成 `false` 才会发布
-   - 可选 `cover: /images/封面图.webp`：文章卡片封面；不填会从 `data/covers.yml` 的占位图里随机取
-   - 可选 `banner: /images/头图.webp`：文章页顶部大图；不填则使用全局横幅
-3. 配图：图片放进 `static/images/`，正文里写 `![说明](/images/图片名.webp)`
-   - 小提示：截图先转成 WebP 或压缩一下再放，页面打开会快很多
-4. 发布：在仓库根目录执行
+   - `cover`：页面头图/列表封面；先写文件名（如 `cover.webp`），发布前由发布会话
+     改成 `/posts/<slug>/images/cover.webp`；不填会从 `data/covers.yml` 的占位图里随机取
+   - 可选 `banner`：文章页顶部大图；不填则使用 `cover` 或全局横幅
+3. 配图：图片放进 `content/posts/<slug>/images/`，正文用 `game-gallery` 引入
+   （见下面「Galgame 评测组件」）；截图建议 WebP，发布会话会用本地 Pillow 转换
+4. 发布：确认内容和版式后才提交；只提交这篇文章的文件夹
    ```
-   git add .
+   git add content/posts/<slug>
    git commit -m "新文章：标题"
    git push
    ```
@@ -31,7 +32,7 @@ Hugo 静态博客，主题 **Reimu**，托管在 Cloudflare Pages，评论用 Tw
 A 和 B 共用 `top`，模板按 `games` 数量自动切换；单作品旧写法 `game:` 仍兼容。
 
 ```yaml
-cover: /images/games/xxx/banner.webp
+cover: /posts/<slug>/images/cover.webp
 review_layout: top   # A/B 用 top（单作品一项 / 多作品多项）；C 用 sections
 games:
   - id: game-id
@@ -41,7 +42,7 @@ games:
     studio: 社团
     release: 2024-06-28
     score: 8.6
-    cover: /images/games/xxx/cover.webp
+    cover: /posts/<slug>/images/cover-<id>.webp
     radar:
       story: 6
       character: 8
@@ -49,9 +50,12 @@ games:
       art: 7
 ```
 
+> 旧文章仍用 `/images/games/...`；新文章的图片在 `content/posts/<slug>/images/`，
+> 发布前由发布会话把文件名改成 `/posts/<slug>/images/...`。
+
 - **A 版式**（`top` + 一项）：桌面（≥1200）封面固定 320px 宽、按原图比例完整显示，卡片高度随封面；右侧是标题、原名/社团/发售日、标签，最右是雷达与总分（总分在雷达正下方）；≤1199 封面通高在左、右侧文字与雷达上下排列。手机端（≤760）A/B/C 统一为：封面自然比例不裁切、标题与评分同排、名称/社团/发行时间、标签、四维分数面板，雷达隐藏。
 - **B 版式**（`top` + 多项）：卡片在正文前双列并排（窄屏单列），标题横跨卡片、评分在右下，左列是封面+雷达，右侧依次是原名、社团、发售日、标签。不加标题、不关联正文，正文继续写整体评测；≤760 同样切到手机卡。
-- **C 版式**（`sections`）：正文用 `{{< game id="game-id" >}}` 插卡；卡片标题即该段 h2 和锚点，首张卡前可写导语。C 卡直接复用 A 卡的 `game-review--feature` 布局（桌面封面按比例完整显示、卡片高度随图；平板封面通高；≤760 与 A/B 共用手机卡），单作品一般不用。
+- **C 版式**（`sections`）：写作时在每段开头写 `<!-- game: 作品名 -->`，发布前由发布会话替换成 `{{< game id="game-id" >}}`；卡片标题即该段 h2 和锚点，首张卡前可写导语。C 卡直接复用 A 卡的 `game-review--feature` 布局（桌面封面按比例完整显示、卡片高度随图；平板封面通高；≤760 与 A/B 共用手机卡），单作品一般不用。
 - 每项使用自己的 `cover`；顶层 `cover` 只做文章头图；`id` 用于 C 版式插卡。
 - `original_title`、`tags` 可选；`tags` 只展示，不会生成站点标签页。
 - 总分 10 分制；雷达图由 Hugo 内联 SVG 根据四项分数生成，以 4 分为起点（中心 = 4、外圈 = 10），不再使用图片。
@@ -62,16 +66,18 @@ games:
 
 ```go
 {{< game-gallery >}}
-![游戏截图 1](/images/games/xxx/01.webp)
-![游戏截图 2](/images/games/xxx/02.webp)
+![游戏截图 1](/posts/<slug>/images/01.webp)
+![游戏截图 2](/posts/<slug>/images/02.webp)
 {{< /game-gallery >}}
 ```
 
+写作时只写文件名（如 `![游戏截图 1](01.webp)`），发布会话会改成站点绝对路径。
+
 两张都是横图时并排，否则上下；点击用主题自带灯箱放大。
 
-A 版式样本：`content/posts/galgame-demo.md`（单作品，`draft: true`）；B 版式样稿：`content/posts/yosuga-no-sora.md`（两卡）；C 版式演示：`content/posts/c-layout-demo.md`（`draft: true`）。旧 `game:` 写法仍兼容，但不再作为新文章示例。
+A 版式样本：`content/posts/galgame-demo.md`（单作品，`draft: true`）；B 版式样稿：`content/posts/yosuga-no-sora.md`（两卡）；C 版式演示：`content/posts/c-layout-demo.md`（`draft: true`）。这三个都是旧的扁平结构，仅作版式参考；新文章从 `archetypes/posts/` 的模板开始。旧 `game:` 写法仍兼容，但不再作为新文章示例。
 
-新建文章可以直接用 `hugo new content posts/文件名.md`，会套用 `archetypes/posts.md`。完整发布流程、素材清单和验收项见 [PUBLISHING.md](PUBLISHING.md)。
+新建文章用 `hugo new content posts/<slug>`（只给目录名），会套用 `archetypes/posts/` 的目录模板，生成 `index.md` + `images/`。完整发布流程、素材清单和验收项见 [PUBLISHING.md](PUBLISHING.md)。
 
 ## 本地预览（可选）
 
@@ -95,12 +101,13 @@ hugo --gc --minify
 | --- | --- |
 | `hugo.toml` | 站点级配置：地址、语言、输出格式、Markdown |
 | `config/_default/params.yml` | Reimu 主题参数：菜单、横幅、侧栏、配色、评论、特效 |
-| `content/posts/` | 文章（首页展示；`/posts/` 列表页已关闭） |
-| `archetypes/posts.md` | 新文章模板（`hugo new content posts/...` 使用） |
+| `content/posts/` | 文章（首页展示；`/posts/` 列表页已关闭）。新文章是 `content/posts/<slug>/index.md` + `images/`；旧文章仍是 `<slug>.md` |
+| `archetypes/posts/` | 新文章 page bundle 模板（`index.md` + `images/.gitkeep`）；用 `hugo new content posts/<slug>` 生成 |
 | `PUBLISHING.md` | 文章发布流程与发布会话交接文档 |
 | `content/about.md` | 关于页 |
 | `content/search.md` | 搜索页 |
 | `static/images/banner.svg` | 首页/文章页横幅（当前是占位图，可替换） |
+| `content/posts/<slug>/images/` | 新文章的配图（WebP；旧文章仍在 `static/images/games/<slug>/`） |
 | `static/avatar/avatar.svg` | 头像（当前是占位图，可替换） |
 | `static/favicon.ico` | 浏览器标签页图标（当前是占位西瓜） |
 | `data/covers.yml` | 文章卡片随机封面 |
