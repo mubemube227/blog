@@ -309,6 +309,11 @@
     }
 }
 
+/* 无副标题时收起 banner 的空行 */
+#subtitle-wrap:not(:has(#subtitle)) {
+    display: none;
+}
+
 /* Galgame 评测头：文章封面继续做头图，作品卡再完整显示一次 */
 body:has(.game-review-article) #header > img {
     height: 100%;
