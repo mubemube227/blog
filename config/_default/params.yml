@@ -50,7 +50,7 @@ banner_srcset:
     - src: "images/banner.webp"
       media: "(min-width: 800px)"
 
-avatar: "avatar.jpg"
+avatar: "avatar.png"
 
 # Control the display of the post cover
 # If not set, the banner image will be displayed by default
@@ -106,7 +106,8 @@ sidebar:
     show_common: true # whether to show common sidebar, ignored on mobile devices
 
 social:
-  github: https://github.com/mubemube227
+  # 暂时隐藏个人卡片里的 GitHub 跳转按钮；恢复时取消下面一行注释
+  # github: https://github.com/mubemube227
 
 widgets:
   - category

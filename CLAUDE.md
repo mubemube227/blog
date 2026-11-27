@@ -37,9 +37,11 @@
 4. 读者在大陆：**不要启用 Google Fonts**（`font.enable: false`，用系统字体）；
    不要把资源换成境外 CDN。主题默认 vendor 用 `webcache`（国内 npm 镜像），
    Twikoo 已本地化；新增第三方资源优先放 `static/` 或 `assets/`。
-5. 文章配图建议 WebP 并压缩。新文章图片随 page bundle 放
-   `content/posts/<slug>/images/`；旧文章的图片仍在 `static/images/games/<slug>/`，
-   不迁移。原图备份到仓库外 `D:\MDzz\AI\boke\originals\<slug>\`。
+5. 文章配图建议 WebP 并压缩。新文章在仓库外的工作区
+   `D:\MDzz\AI\boke\articles\<中文名>\` 编辑（目录名用中文）：`index.md`、`配图/`、`候选/`、
+   `超分/`、`原图/`、`预览/`；预览/发布时只把 `index.md` + `配图/*.webp`
+   复制到 `content/posts/<slug>/`（bundle 只是发布副本，`<slug>` 仍用英文/罗马音）。旧文章的图片仍在
+   `static/images/games/<slug>/`，不迁移；旧 `originals/<slug>/` 备份不动。
 6. 提交信息用中文，一句话说明改动。改完先本地 `hugo --gc --minify` 确认无报错再提交。
 
 ## 前端设计与验收流程（强制）
@@ -60,15 +62,17 @@
 | --- | --- |
 | `hugo.toml` | 站点级配置（地址、语言、输出格式、Markdown） |
 | `config/_default/params.yml` | Reimu 主题参数（菜单、侧栏、配色、Twikoo 等） |
-| `content/posts/` | 文章（`mainSections: ["posts"]`，URL 仍是 `/posts/...`；`/posts/` 列表页已关闭）。新文章是 page bundle：`<slug>/index.md` + `<slug>/images/`；旧文章仍是 `<slug>.md` |
-| `archetypes/posts/` | 新文章 page bundle 模板（`index.md` + `images/.gitkeep`）；用 `hugo new content posts/<slug>` 生成 |
-| `PUBLISHING.md` | 发布流程、素材清单、验收项（给专门的文章发布会话） |
+| `content/posts/` | 文章（`mainSections: ["posts"]`，URL 仍是 `/posts/...`；`/posts/` 列表页已关闭）。新文章只放发布副本 `<slug>/index.md` + `<slug>/images/`；旧文章仍是 `<slug>.md` |
+| `D:\MDzz\AI\boke\articles\<中文名>\` | 新文章的 workspace（仓库外，唯一编辑处）：`index.md`、`配图/`、`候选/`、`超分/`、`原图/`、`预览/` |
+| `archetypes/posts/` | 新文章模板（`index.md` + `images/.gitkeep`）；`hugo new content posts/<slug>` 生成后移到 workspace |
+| `PUBLISHING.md` | 发布主流程、workspace/bundle、超分、预览、验收（给文章发布会话） |
+| `IMAGE-SOURCING.md` | 找图渠道、候选表、超分细节（给发布会话） |
 | `content/about.md` | 关于页 |
 | `content/search.md` | 搜索页（`layout: search`） |
 | `static/images/banner.svg` | 全局横幅（占位） |
-| `static/images/games/<slug>/` | 旧文章的配图（新文章改用 bundle 内的 `images/`） |
-| `static/avatar/avatar.jpg` | 头像（线稿，512×512） |
-| `static/favicon.ico` | 标签页图标（16–256 多尺寸） |
+| `static/images/games/<slug>/` | 旧文章的配图（新文章用 workspace 的 `配图/`，复制进 bundle） |
+| `static/avatar/avatar.png` | 头像（透明线稿，512×512，细灰描边） |
+| `static/favicon.ico` | 标签页图标（16–256 多尺寸，透明；16/32 带 1px 描边） |
 | `data/covers.yml` | 文章卡片随机封面（占位 SVG） |
 | `static/css/custom.css` | 搜索页、手机端标题、深色强调色 |
 | `layouts/search.html` + `assets/js/search.js` + `layouts/index.json` | 本地 Fuse.js 搜索 |
@@ -108,7 +112,8 @@
 
 ## Galgame 评测组件
 
-- 新文章用 page bundle：`content/posts/<slug>/index.md` + `images/`；旧文章仍是
+- 新文章在仓库外 workspace `D:\MDzz\AI\boke\articles\<中文名>\` 编辑，`index.md` + `配图/`
+  是唯一源；预览/发布时复制到 `content/posts/<slug>/`（bundle 只是发布副本）。旧文章仍是
   `content/posts/<slug>.md` + `static/images/games/<slug>/`，不迁移。
 - 版式命名：**A = 单作品**（`top` + 一个 `games` 条目）；**B = 多作品卡片置顶**
   （`top` + 多个 `games`）；**C = 多作品分段插卡**（`sections` + `game` shortcode）。
@@ -154,9 +159,11 @@
   `content/posts/c-layout-demo.md`（C 版式演示草稿）、
   `content/posts/galgame-demo.md`（A 版式单作品样本，保持 `draft: true`）。
 - 新文章模板：`archetypes/posts/`（`index.md` + `images/.gitkeep`）。
-  `hugo new content posts/<slug>` 会生成 `content/posts/<slug>/index.md` 和 `images/`；
-  发布前把图片转成 WebP、路径改成 `/posts/<slug>/images/...`。
-  发布流程与发布会话交接见 `PUBLISHING.md`。
+  `hugo new content posts/<slug>` 生成后，把整个目录移到
+  `D:\MDzz\AI\boke\articles\<中文名>\`；图片转 WebP、路径改成
+  `/posts/<slug>/images/...`，再把 `index.md` + `配图/*.webp` 复制回
+  `content/posts/<slug>/`。发布流程见 `PUBLISHING.md`。
+- 配图来源、候选表与超分方案见 `IMAGE-SOURCING.md`。
 
 ## 搜索
 
